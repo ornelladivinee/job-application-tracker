@@ -1,22 +1,20 @@
 import pandas as pd
 
-# Estructura del tracker
-data = {
-    "Company": [],
-    "Country": [],
-    "Position": [],
-    "Date Applied": [],
-    "Platform": [],
-    "Status": [],
-    "Link": [],
-    "Notes": [],
-    "Follow-up Date": []
-}
+file_path = "applications_tracker.xlsx"
 
-# Crear tabla
-df = pd.DataFrame(data)
+columns = [
+    "Company",
+    "Country",
+    "Position",
+    "Date Applied",
+    "Platform",
+    "Status",
+    "Link",
+    "Notes",
+    "Follow-up Date"
+]
 
-# Guardar Excel
-df.to_excel("applications_tracker.xlsx", index=False)
+df = pd.DataFrame(columns=columns)
+df.to_excel(file_path, index=False)
 
-print("Excel creado correctamente")
+print("Tracker creado correctamente desde cero")
