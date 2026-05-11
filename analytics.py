@@ -3,10 +3,13 @@ from openpyxl import load_workbook
 from openpyxl.styles import Font
 
 # =========================
-# CARGAR EXCEL
+# ARCHIVO
 # =========================
 file_path = "applications_tracker.xlsx"
 
+# =========================
+# LEER DATOS
+# =========================
 df = pd.read_excel(file_path)
 
 # =========================
@@ -19,21 +22,33 @@ rejected = len(df[df["Status"] == "Rejected"])
 pending = len(df[df["Status"] == "Pending"])
 
 # =========================
-# ABRIR EXCEL CON OPENPYXL
+# ABRIR EXCEL
 # =========================
 wb = load_workbook(file_path)
 ws = wb.active
 
 # =========================
-# UBICACIÓN DEL RESUMEN
+# ELIMINAR RESUMEN ANTERIOR
+# =========================
+for row in range(1, ws.max_row + 1):
+    cell_value = ws.cell(row=row, column=1).value
+
+    if cell_value == "JOB TRACKER DASHBOARD":
+        ws.delete_rows(row, 6)
+        break
+
+# =========================
+# NUEVA POSICIÓN DEL RESUMEN
 # =========================
 summary_row = ws.max_row + 3
 
-# Título
-ws.cell(row=summary_row, column=1, value="JOB TRACKER DASHBOARD")
-ws.cell(row=summary_row, column=1).font = Font(bold=True, size=14)
+# =========================
+# ESCRIBIR DASHBOARD
+# =========================
+title_cell = ws.cell(row=summary_row, column=1)
+title_cell.value = "JOB TRACKER DASHBOARD"
+title_cell.font = Font(bold=True, size=14)
 
-# Datos
 ws.cell(row=summary_row + 1, column=1, value="Total Applications")
 ws.cell(row=summary_row + 1, column=2, value=total)
 
@@ -51,4 +66,4 @@ ws.cell(row=summary_row + 4, column=2, value=pending)
 # =========================
 wb.save(file_path)
 
-print("✔ Dashboard agregado al Excel")
+print("✔ Dashboard actualizado correctamente")
