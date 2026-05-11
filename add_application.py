@@ -32,7 +32,7 @@ applications = [
         "Position": "Azure DevOps Trainee (m/f/d)",
         "Date Applied": "2026-05-06",
         "Platform": "iAgora",
-        "Status": "Applied",
+        "Status": "Rejected",
         "Link": "",
         "Notes": "Cloud / DevOps / Azure"
     },
@@ -153,6 +153,19 @@ applications = [
     "Focus": "Technology, Innovation, IT",
     "Paid": "Not specified",
     "Notes": "Scholarship/internship application confirmed by BBVA recruitment team"
+},
+{
+    "Company": "Natixis",
+    "Country": "Portugal",
+    "City": "Porto / Lisbon",
+    "Position": "IT Trainee | WE WANT YOU 2026 S2",
+    "Date Applied": "2026-05-11",
+    "Platform": "Natixis Careers",
+    "Status": "Applied",
+    "Focus": "IT Trainee Program, Development, Data, Cybersecurity, DevOps",
+    "Paid": "Not specified",
+    "Work Mode": "Hybrid",
+    "Notes": "International trainee program focused on IT, software development, data, cybersecurity and analytics"
 }
 ]
 
@@ -172,16 +185,30 @@ from openpyxl.utils import get_column_letter
 wb = load_workbook("applications_tracker.xlsx")
 ws = wb.active
 
+
 # =========================
-# AGREGAR COLUMNA ID
+# AGREGAR / ACTUALIZAR COLUMNA ID (openpyxl) - CORREGIDO
 # =========================
+
+from openpyxl import load_workbook
+
+wb = load_workbook("applications_tracker.xlsx")
+ws = wb.active
+
+# Eliminar TODAS las columnas que empiecen con "ID" (ID, ID.1, ID.2, ...)
+for col_idx in range(ws.max_column, 0, -1):
+    header = ws.cell(row=1, column=col_idx).value
+    if header and str(header).startswith("ID"):
+        ws.delete_cols(col_idx)
+
+# Insertar nueva columna ID al inicio
 ws.insert_cols(1)
-
 ws["A1"] = "ID"
-
 for row in range(2, ws.max_row + 1):
     ws[f"A{row}"] = row - 1
 
+wb.save("applications_tracker.xlsx")
+print(" Columna ID única agregada.")
 # =========================
 # ESTILO HEADERS
 # =========================
