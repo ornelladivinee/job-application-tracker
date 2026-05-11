@@ -1,4 +1,3 @@
-
 import pandas as pd
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Font
@@ -188,24 +187,25 @@ applications = [
         "Application Security"
     ],
     "Notes": "Student role focused on Product Security, vulnerability management and secure development practices in a global tech environment. Strong interest in cybersecurity and hands-on learning."
-}
+},
+    {
+    "Company": "Accenture",
+    "Country": "Portugal",
+    "Position": "Technology Summer Internship",
+    "Date Applied": "2026-05-11",
+    "Platform": "Accenture Careers",
+    "Status": "Applied",
+    "Link": "",
+    "Notes": "Req ID: R00321525 | Application received"
+},
 ]
 
 # =========================
-# CARGAR O CREAR EXCEL
+# REESCRIBIR EXCEL COMPLETO
 # =========================
-try:
-    df = pd.read_excel(file_path)
-except FileNotFoundError:
-    df = pd.DataFrame(columns=[
-        "Company","Country","Position","Date Applied",
-        "Platform","Status","Link","Notes"
-    ])
+df = pd.DataFrame(applications)
 
-# agregar datos
-df = pd.concat([df, pd.DataFrame(applications)], ignore_index=True)
-
-# guardar
+# sobrescribe TODO el archivo
 df.to_excel(file_path, index=False)
 
 # =========================
@@ -214,41 +214,96 @@ df.to_excel(file_path, index=False)
 wb = load_workbook(file_path)
 ws = wb.active
 
-green = PatternFill(start_color="C6EFCE", fill_type="solid")
-red = PatternFill(start_color="FFC7CE", fill_type="solid")
-yellow = PatternFill(start_color="FFEB9C", fill_type="solid")
+green = PatternFill(
+    start_color="C6EFCE",
+    end_color="C6EFCE",
+    fill_type="solid"
+)
 
-# header
+red = PatternFill(
+    start_color="FFC7CE",
+    end_color="FFC7CE",
+    fill_type="solid"
+)
+
+yellow = PatternFill(
+    start_color="FFEB9C",
+    end_color="FFEB9C",
+    fill_type="solid"
+)
+
+# Header bold
 for cell in ws[1]:
     cell.font = Font(bold=True)
 
-# status column
+# Buscar columna Status
 status_col = None
+
 for cell in ws[1]:
     if cell.value == "Status":
         status_col = cell.column
+        break
 
+# Colores por estado
 if status_col:
     for row in range(2, ws.max_row + 1):
-        val = ws.cell(row=row, column=status_col).value
-        if val == "Applied":
-            ws.cell(row=row, column=status_col).fill = green
-        elif val == "Rejected":
-            ws.cell(row=row, column=status_col).fill = red
-        elif val == "Pending":
-            ws.cell(row=row, column=status_col).fill = yellow
+
+        status_cell = ws.cell(row=row, column=status_col)
+
+        if status_cell.value == "Applied":
+            status_cell.fill = green
+
+        elif status_cell.value == "Rejected":
+            status_cell.fill = red
+
+        elif status_cell.value == "Pending":
+            status_cell.fill = yellow
 
 # =========================
 # DASHBOARD
 # =========================
-df = pd.read_excel(file_path)
+total = len(df)
 
-print("\n📊 JOB TRACKER")
-print(f"Total: {len(df)}")
-print(f"Applied: {len(df[df['Status']=='Applied'])}")
-print(f"Rejected: {len(df[df['Status']=='Rejected'])}")
-print(f"Pending: {len(df[df['Status']=='Pending'])}")
+applied = len(df[df["Status"] == "Applied"])
+rejected = len(df[df["Status"] == "Rejected"])
+total = len(df)
 
+applied = len(df[df["Status"] == "Applied"])
+rejected = len(df[df["Status"] == "Rejected"])
+
+pending = applied - rejected
+
+print("\nJOB TRACKER")
+print(f"Total: {total}")
+print(f"Applied: {applied}")
+print(f"Rejected: {rejected}")
+print(f"Pending: {pending}")
+
+
+from openpyxl.styles import Font
+
+# =========================
+# DASHBOARD EN EXCEL
+# =========================
+
+start_row = ws.max_row + 2
+
+ws.cell(row=start_row, column=1, value="JOB TRACKER DASHBOARD").font = Font(bold=True)
+
+ws.cell(row=start_row + 1, column=1, value="Total:")
+ws.cell(row=start_row + 1, column=2, value=total)
+
+ws.cell(row=start_row + 2, column=1, value="Applied:")
+ws.cell(row=start_row + 2, column=2, value=applied)
+
+ws.cell(row=start_row + 3, column=1, value="Rejected:")
+ws.cell(row=start_row + 3, column=2, value=rejected)
+
+ws.cell(row=start_row + 4, column=1, value="Pending:")
+ws.cell(row=start_row + 4, column=2, value=pending)
+# =========================
+# GUARDAR
+# =========================
 wb.save(file_path)
 
 print("\n✔ Sistema actualizado correctamente")
