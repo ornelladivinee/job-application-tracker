@@ -207,8 +207,7 @@ ws["A1"] = "ID"
 for row in range(2, ws.max_row + 1):
     ws[f"A{row}"] = row - 1
 
-wb.save("applications_tracker.xlsx")
-print(" Columna ID única agregada.")
+
 # =========================
 # ESTILO HEADERS
 # =========================
@@ -281,7 +280,71 @@ for column in ws.columns:
 ws.auto_filter.ref = ws.dimensions
 ws.freeze_panes = "A2"
 
+
+
+# =========================
+# CONTAR POSTULACIONES RECHAZADAS
+# =========================
+
+# Buscar la columna "Status"
+status_col = None
+for col in range(1, ws.max_column + 1):
+    if ws.cell(row=1, column=col).value == "Status":
+        status_col = col
+        break
+
+# Contar cuántas celdas tienen "Rejected" 
+rejected_count = 0
+if status_col:
+    for row in range(2, ws.max_row + 1):
+        if ws.cell(row=row, column=status_col).value == "Rejected":
+            rejected_count += 1
+
+# Mostrar en consola
+print(f"\n Resumen: {rejected_count} postulaciones rechazadas.")
+
+# Escribir el total dentro del Excel 
+last_row = ws.max_row + 2
+ws.cell(row=last_row, column=1, value="Total Rechazadas:")
+ws.cell(row=last_row, column=status_col, value=rejected_count)
+
+# Darle formato 
+from openpyxl.styles import Font
+ws.cell(row=last_row, column=1).font = Font(bold=True)
+ws.cell(row=last_row, column=status_col).font = Font(bold=True)
+
+# =========================
+# CONTAR POSTULACIONES APLICADAS
+# =========================
+
+# Buscar la columna "Status"
+status_col = None
+for col in range(1, ws.max_column + 1):
+    if ws.cell(row=1, column=col).value == "Status":
+        status_col = col
+        break
+
+# Contar cuántas celdas tienen "Applied" 
+applied_count = 0
+if status_col:
+    for row in range(2, ws.max_row + 1):
+        if ws.cell(row=row, column=status_col).value == "Applied":
+            applied_count += 1
+
+# Mostrar en consola
+print(f"\n Resumen: {applied_count} postulaciones aplicadas.")
+
+# Escribir el total dentro del Excel 
+last_row = ws.max_row + 2
+ws.cell(row=last_row, column=1, value="Total Aplicadas:")
+ws.cell(row=last_row, column=status_col, value=applied_count)
+
+# Darle formato 
+from openpyxl.styles import Font
+ws.cell(row=last_row, column=1).font = Font(bold=True)
+ws.cell(row=last_row, column=status_col).font = Font(bold=True)
+applied_count = 0
+
+
 # Guardar cambios
 wb.save("applications_tracker.xlsx")
-
-print("Tracker actualizado con ID, estilos y colores por status")
